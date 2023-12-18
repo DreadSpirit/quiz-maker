@@ -2,11 +2,11 @@
   "name": "quiz-maker",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://dreadspirit.github.io/quiz-maker",
   "type": "module",
-  "homepage": "https://dreadspirit.github.io/quiz-maker/",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --base=/quiz-maker",
     "lint": "eslint quiz-maker --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
