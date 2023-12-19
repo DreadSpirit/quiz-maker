@@ -17,6 +17,9 @@ const QuizAnswerButtonComponent: React.FC<QuizAnswerButtonProps> = (props: QuizA
 
     useEffect(() => setClassColor(props.state), [props.state]);
 
+    /**
+     * Permet d'être en mode READONLY sur la page de résultat
+     */
     const disablePointerEvents = () => props.quizFormMode === QuizzFormMode.RESULT ? "btn-disable" : "";
 
     return <button type="button" className={"btn " + classColor + " " + disablePointerEvents()} onClick={props.onClick}>

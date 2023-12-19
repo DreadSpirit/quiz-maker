@@ -28,7 +28,7 @@ const QuizResultPage: React.FC = () => {
             answeredQuestion.selected_answer === answeredQuestion.question.correct_answer).length, [answeredQuestions]);
 
 
-    const setColorFromQuizzScore = () => {
+    const colorFromQuizzScore = () => {
         if (quizzScore < 2) {
             return "background-red"
         } else if (quizzScore < 4) {
@@ -43,7 +43,7 @@ const QuizResultPage: React.FC = () => {
         <h1>Result !</h1>
         <QuizResultFormComponent answeredQuestions={answeredQuestions}/>
         <div className="row justify-content-center">
-            <div className={`col-md-4 ${setColorFromQuizzScore()}`}>
+            <div className={`col-md-4 ${colorFromQuizzScore()}`}>
                 You scored {quizzScore} out of {answeredQuestions.length}</div>
         </div>
         <div className="row justify-content-center">

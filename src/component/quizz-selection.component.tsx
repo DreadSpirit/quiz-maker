@@ -23,19 +23,30 @@ const QuizzSelectionComponent: React.FC<QuizzSelectionProps> = (props: QuizzSele
     ]
 
 
+    const [formCompleted, setFormCompleted] = useState(false);
+
     const [selectedDifficulty, setSelectedDifficulty] = useState<string>();
     const [selectedCategory, setSelectedCategory] = useState<string>()
 
 
-    // Fetch categories
+    /**
+     * Récuperation des catégories
+     */
     useEffect(() => {
         get(categoriesUrl)
             .then((response: AxiosResponse<{
                 trivia_categories: QuizzCategory[]
             }>) => setCategories(response.data.trivia_categories))
             .catch(reason => console.log(reason));
-    }, [categoriesUrl])
+    }, [categoriesUrl]);
 
+    useEffect(() => {
+        setFormCompleted(selectedCategory !== undefined && selectedDifficulty !== undefined);
+    }, [selectedDifficulty, selectedCategory]);
+
+    /**
+     * Récuperation de la liste des questions
+     */
     const fetchQuestionList = () => {
         get(`${openTdbBaseUrl}/api.php?amount=5&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=multiple`)
             .then((response: AxiosResponse<{ results: QuizzQuestion[] }>) => props.setQuestions(response.data.results))
@@ -67,8 +78,9 @@ const QuizzSelectionComponent: React.FC<QuizzSelectionProps> = (props: QuizzSele
         </div>
         <div className="col-md-1 ">
             <button id="createBtn" type="button" className="btn btn-primary"
-                    onClick={() => fetchQuestionList()}
-            >Create
+                    disabled={!formCompleted}
+                    onClick={fetchQuestionList}>
+                Create
             </button>
         </div>
     </div>

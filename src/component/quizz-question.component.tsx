@@ -1,62 +1,70 @@
 import React, {useEffect, useState} from "react";
 import QuizAnswerButtonComponent from "./quiz-answer-button.component.tsx";
-import {QuizzAnswerButtonState, QuizzFormMode} from "../model/quizz-model.ts";
+import {QuizzAnswerButtonState, QuizzFormMode, QuizzQuestion} from "../model/quizz-model.ts";
 
 interface QuestionQuizzProps {
-    question: string
-    correctAnswer: string,
-    incorrectAnswers: string[],
+    quizzQuestion: QuizzQuestion,
     onSelectedAnswer?: (selectedAnswer: string) => void,
-    selectedAnswer?: string
+    defaultSelectedAnswer?: string
     quizFormMode: QuizzFormMode
 }
+
 /**
  * Représente un boutton de réponse du quizz
  */
 const QuizzQuestionComponent: React.FC<QuestionQuizzProps> = (props: QuestionQuizzProps) => {
 
     const [answers, setAnswers] = useState<string[]>();
-    const [selectedAnswer, setSelectedAnswer] = useState<string>(props.selectedAnswer ?? "");
+    const [selectedAnswer, setSelectedAnswer] = useState<string>(props.defaultSelectedAnswer ?? "");
     const onSelectedAnswer = (answer: string) => {
         if (props.quizFormMode === QuizzFormMode.QUESTION && props.onSelectedAnswer) {
             setSelectedAnswer(answer)
             props.onSelectedAnswer(answer);
         }
-
     }
 
+    const isTheSelectedAnswer = (answer: string) => answer === selectedAnswer;
+    const isTheCorrectAnswer = (answer: string) => answer === props.quizzQuestion.correct_answer;
+    const isABadAnswer = (answer: string) => answer === selectedAnswer && selectedAnswer !== props.quizzQuestion.correct_answer;
+
+    const isInResultMode = () => props.quizFormMode === QuizzFormMode.RESULT;
+
+    /**
+     * Calcule l'état de la réponse pour déterminer la couleur à afficher
+     * @param answer libellé de la réponse
+     */
     const calcAnswerState = (answer: string): QuizzAnswerButtonState => {
-        if (props.quizFormMode === QuizzFormMode.QUESTION) {
-            if (answer === selectedAnswer) {
-                return QuizzAnswerButtonState.SELECTED;
-            } else {
-                return QuizzAnswerButtonState.UNSELECTED;
-            }
-        } else if (answer === props.correctAnswer) {
-            return QuizzAnswerButtonState.SELECTED;
-        } else if (answer === selectedAnswer && selectedAnswer !== props.correctAnswer) {
+        if (isInResultMode() && isABadAnswer(answer)) {
             return QuizzAnswerButtonState.BAD_ANSWER;
-        } else {
-            return QuizzAnswerButtonState.UNSELECTED;
+        } else if (isTheSelectedAnswer(answer) || (isInResultMode() && isTheCorrectAnswer(answer))) {
+            return QuizzAnswerButtonState.SELECTED;
         }
+        return QuizzAnswerButtonState.UNSELECTED;
     }
 
+    /**
+     * Mélange les réponses dans un ordre aléatoir
+     * @param array
+     */
     const shuffleAnswers = (array: string[]) =>
         array.map(value => ({value, sort: Math.random()}))
             .sort((a, b) => a.sort - b.sort)
             .map(({value}) => value)
 
+    /**
+     *
+     */
     useEffect(() => {
+        let mergedAnswers = [props.quizzQuestion.correct_answer, ...props.quizzQuestion.incorrect_answers];
         if (props.quizFormMode === QuizzFormMode.QUESTION) {
-            setAnswers(shuffleAnswers([props.correctAnswer, ...props.incorrectAnswers]));
-        } else {
-            setAnswers([props.correctAnswer, ...props.incorrectAnswers]);
+            mergedAnswers = shuffleAnswers(mergedAnswers);
         }
-    }, [props.correctAnswer, props.incorrectAnswers])
+        setAnswers(mergedAnswers);
+    }, [props.quizzQuestion.correct_answer, props.quizzQuestion.incorrect_answers])
 
     return <div className="row" style={{marginTop: "1.5rem"}}>
         <div className="d-flex justify-content-start">
-            {props.question}
+            {props.quizzQuestion.question}
         </div>
         <div className="row">
             <div className="d-flex justify-content-start">
