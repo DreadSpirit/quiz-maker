@@ -12,14 +12,14 @@ const QuizQuestionsPage: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const [questions, setQuestions] = useState<QuizzQuestion[]>([]);
+    const [quizzQuestions, setQuizzQuestions] = useState<QuizzQuestion[]>([]);
     const [answeredQuestions, setAnsweredQuestions] = useState<QuizzAnsweredQuestion[]>([])
 
     const [isAllQuestionsAnswered, setIsAllQuestionsAnswered] = useState(false);
 
     useEffect(() => {
-        setIsAllQuestionsAnswered(questions.length !== 0 && (answeredQuestions.length === questions.length))
-    }, [questions, answeredQuestions]);
+        setIsAllQuestionsAnswered(quizzQuestions.length !== 0 && (answeredQuestions.length === quizzQuestions.length))
+    }, [quizzQuestions, answeredQuestions]);
 
     const submitQuizz = () => {
         navigate("/result", {state: answeredQuestions});
@@ -30,10 +30,10 @@ const QuizQuestionsPage: React.FC = () => {
             <div className="row">
                 <h1>QUIZ MAKER</h1>
             </div>
-            <QuizzSelectionComponent setQuestions={setQuestions}/>
+            <QuizzSelectionComponent setQuizzQuestions={setQuizzQuestions}/>
             <div className="row m-3">
-                {questions &&
-                    <QuizQuestionsFormComponent quizzQuestions={questions}
+                {quizzQuestions &&
+                    <QuizQuestionsFormComponent quizzQuestions={quizzQuestions}
                                                 setAnsweredQuestions={setAnsweredQuestions}/>
                 }
             </div>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import QuizAnswerButtonComponent from "./quiz-answer-button.component.tsx";
 import {QuizzAnswerButtonState, QuizzFormMode, QuizzQuestion} from "../model/quizz-model.ts";
 
@@ -14,7 +14,6 @@ interface QuestionQuizzProps {
  */
 const QuizzQuestionComponent: React.FC<QuestionQuizzProps> = (props: QuestionQuizzProps) => {
 
-    const [answers, setAnswers] = useState<string[]>();
     const [selectedAnswer, setSelectedAnswer] = useState<string>(props.defaultSelectedAnswer ?? "");
     const onSelectedAnswer = (answer: string) => {
         if (props.quizFormMode === QuizzFormMode.QUESTION && props.onSelectedAnswer) {
@@ -24,8 +23,8 @@ const QuizzQuestionComponent: React.FC<QuestionQuizzProps> = (props: QuestionQui
     }
 
     const isTheSelectedAnswer = (answer: string) => answer === selectedAnswer;
-    const isTheCorrectAnswer = (answer: string) => answer === props.quizzQuestion.correct_answer;
-    const isABadAnswer = (answer: string) => answer === selectedAnswer && selectedAnswer !== props.quizzQuestion.correct_answer;
+    const isTheCorrectAnswer = (answer: string) => answer === props.quizzQuestion.correctAnswer;
+    const isABadAnswer = (answer: string) => answer === selectedAnswer && selectedAnswer !== props.quizzQuestion.correctAnswer;
 
     const isInResultMode = () => props.quizFormMode === QuizzFormMode.RESULT;
 
@@ -42,25 +41,6 @@ const QuizzQuestionComponent: React.FC<QuestionQuizzProps> = (props: QuestionQui
         return QuizzAnswerButtonState.UNSELECTED;
     }
 
-    /**
-     * Mélange les réponses dans un ordre aléatoir
-     * @param array
-     */
-    const shuffleAnswers = (array: string[]) =>
-        array.map(value => ({value, sort: Math.random()}))
-            .sort((a, b) => a.sort - b.sort)
-            .map(({value}) => value)
-
-    /**
-     *
-     */
-    useEffect(() => {
-        let mergedAnswers = [props.quizzQuestion.correct_answer, ...props.quizzQuestion.incorrect_answers];
-        if (props.quizFormMode === QuizzFormMode.QUESTION) {
-            mergedAnswers = shuffleAnswers(mergedAnswers);
-        }
-        setAnswers(mergedAnswers);
-    }, [props.quizzQuestion.correct_answer, props.quizzQuestion.incorrect_answers])
 
     return <div className="row" style={{marginTop: "1.5rem"}}>
         <div className="d-flex justify-content-start">
@@ -69,7 +49,7 @@ const QuizzQuestionComponent: React.FC<QuestionQuizzProps> = (props: QuestionQui
         <div className="row">
             <div className="d-flex justify-content-start">
                 {
-                    answers?.map(((answer) =>
+                    props.quizzQuestion.shuffledAnswers?.map(((answer) =>
                             <div key={answer} className="form-check m-2">
                                 <QuizAnswerButtonComponent key={answer} label={answer}
                                                            state={calcAnswerState(answer)}

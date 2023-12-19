@@ -1,10 +1,10 @@
-import {QuizzCategory, QuizzDifficulty, QuizzQuestion} from "../model/quizz-model.ts";
+import {QuizzCategory, QuizzDifficulty, QuizzQuestion, QuizzQuestionApiResponse} from "../model/quizz-model.ts";
 import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {Form} from "react-bootstrap";
 import get, {AxiosResponse} from "axios";
 
 interface QuizzSelectionProps {
-    setQuestions: Dispatch<SetStateAction<QuizzQuestion[]>>
+    setQuizzQuestions: Dispatch<SetStateAction<QuizzQuestion[]>>
 }
 
 /**
@@ -44,12 +44,42 @@ const QuizzSelectionComponent: React.FC<QuizzSelectionProps> = (props: QuizzSele
         setFormCompleted(selectedCategory !== undefined && selectedDifficulty !== undefined);
     }, [selectedDifficulty, selectedCategory]);
 
+
+    /**
+     * Map les réponses de l'API en QuizzQuestion
+     * @param quizzQuestionApiResponse Les questions du quizz renvoyées par l'API
+     */
+    const mapQuizzQuestionsFromApiResponse = (quizzQuestionApiResponse: QuizzQuestionApiResponse[]) =>
+        props.setQuizzQuestions(quizzQuestionApiResponse.map(el => {
+            const quizzQuestion: QuizzQuestion = {
+                category: el.category,
+                type: el.type,
+                difficulty: el.difficulty,
+                question: el.question,
+                correctAnswer: el.correct_answer,
+                incorrectAnswers: el.incorrect_answers,
+                shuffledAnswers: shuffleAnswers([el.correct_answer, ...el.incorrect_answers])
+            };
+            return quizzQuestion;
+        }))
+
+    /**
+     * Mélange les réponses dans un ordre aléatoire
+     * @param array
+     */
+    const shuffleAnswers = (array: string[]) =>
+        array.map(value => ({value, sort: Math.random()}))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({value}) => value)
+
     /**
      * Récuperation de la liste des questions
      */
     const fetchQuestionList = () => {
         get(`${openTdbBaseUrl}/api.php?amount=5&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=multiple`)
-            .then((response: AxiosResponse<{ results: QuizzQuestion[] }>) => props.setQuestions(response.data.results))
+            .then((response: AxiosResponse<{
+                results: QuizzQuestionApiResponse[]
+            }>) => mapQuizzQuestionsFromApiResponse(response.data.results))
             .catch(reason => {
                 console.log(reason);
             });

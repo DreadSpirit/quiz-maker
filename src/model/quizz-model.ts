@@ -9,13 +9,23 @@ export interface QuizzDifficulty {
     label: string
 }
 
-export interface QuizzQuestion {
+export interface QuizzQuestionApiResponse {
     type: string,
     difficulty: string,
     category: string,
     question: string,
     correct_answer: string,
-    incorrect_answers: string[]
+    incorrect_answers: string[],
+    shuffledAnswers: string[]
+}
+export interface QuizzQuestion {
+    type: string,
+    difficulty: string,
+    category: string,
+    question: string,
+    correctAnswer: string,
+    incorrectAnswers: string[],
+    shuffledAnswers: string[]
 }
 
 export interface QuizzAnsweredQuestion {

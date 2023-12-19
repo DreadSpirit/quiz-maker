@@ -25,7 +25,7 @@ const QuizResultPage: React.FC = () => {
 
     const quizzScore = useMemo(() =>
         answeredQuestions.filter(answeredQuestion =>
-            answeredQuestion.selected_answer === answeredQuestion.question.correct_answer).length, [answeredQuestions]);
+            answeredQuestion.selected_answer === answeredQuestion.question.correctAnswer).length, [answeredQuestions]);
 
 
     const colorFromQuizzScore = () => {
