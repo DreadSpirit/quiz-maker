@@ -40,7 +40,7 @@ const QuizResultPage: React.FC = () => {
 
 
     return <>
-        <h1>Result !</h1>
+        <h1>Results</h1>
         <QuizResultFormComponent answeredQuestions={answeredQuestions}/>
         <div className="row justify-content-center">
             <div className={`col-md-4 ${colorFromQuizzScore()}`}>
