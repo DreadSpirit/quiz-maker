@@ -51,17 +51,33 @@ const QuizzSelectionComponent: React.FC<QuizzSelectionProps> = (props: QuizzSele
      */
     const mapQuizzQuestionsFromApiResponse = (quizzQuestionApiResponse: QuizzQuestionApiResponse[]) =>
         props.setQuizzQuestions(quizzQuestionApiResponse.map(el => {
+            const cleanQuestion = cleanText(el.question);
+            const cleanCorrectAnswer = cleanText(el.correct_answer);
+            const cleanIncorrectAnswers = el.incorrect_answers.map(an => cleanText(an));
+            const shuffledAnswers = shuffleAnswers([... cleanIncorrectAnswers, cleanCorrectAnswer]);
+
             const quizzQuestion: QuizzQuestion = {
                 category: el.category,
                 type: el.type,
                 difficulty: el.difficulty,
-                question: el.question,
-                correctAnswer: el.correct_answer,
-                incorrectAnswers: el.incorrect_answers,
-                shuffledAnswers: shuffleAnswers([el.correct_answer, ...el.incorrect_answers])
+                question: cleanQuestion,
+                correctAnswer: cleanCorrectAnswer,
+                incorrectAnswers: cleanIncorrectAnswers,
+                shuffledAnswers: shuffledAnswers
             };
             return quizzQuestion;
         }))
+
+    /**
+     * Trick pour réinterpréter le texte encodé en HTML  renvoyé par l'API
+     * @param htmlText texte encodé en HTML
+     */
+    const cleanText = (htmlText: string) => {
+        let areaElement = document.createElement("textarea");
+        areaElement.innerHTML = htmlText;
+
+        return areaElement.value;
+    }
 
     /**
      * Mélange les réponses dans un ordre aléatoire

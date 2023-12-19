@@ -25,7 +25,6 @@ const QuizzQuestionComponent: React.FC<QuestionQuizzProps> = (props: QuestionQui
     const isTheSelectedAnswer = (answer: string) => answer === selectedAnswer;
     const isTheCorrectAnswer = (answer: string) => answer === props.quizzQuestion.correctAnswer;
     const isABadAnswer = (answer: string) => answer === selectedAnswer && selectedAnswer !== props.quizzQuestion.correctAnswer;
-
     const isInResultMode = () => props.quizFormMode === QuizzFormMode.RESULT;
 
     /**
